@@ -1,0 +1,13 @@
+site_name: Evolutionary OpenRLHF
+site_description: 进化强化学习框架 - 基于OpenRLHF的种群进化训练
+repo_url: https://github.com/privacynot/evolutionary-openrlhf   # 改成你的实际地址
+repo_name: evolutionary-openrlhf
+
+theme:
+  name: material
+
+nav:
+  - 首页: index.md
+  - 入门指南: getting-started.md
+  - 核心概念: core-concepts.md
+  - 开发扩展: development.md
