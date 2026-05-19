@@ -1,0 +1,7 @@
+models:
+  base_policy: "Qwen/Qwen2.5-7B"
+  use_lora: true
+  lora_rank: 64
+  lora_alpha: 128
+  max_seq_length: 2048
+  cache_dir: "./.cache"
