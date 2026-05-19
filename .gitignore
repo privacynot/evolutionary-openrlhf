@@ -1,0 +1,18 @@
+# Weights & checkpoints
+*.bin
+*.safetensors
+*.pt
+*.ckpt
+checkpoints/
+logs/
+outputs/
+
+# Cache
+.cache/
+__pycache__/
+*.pyc
+
+# Environment
+.env
+wandb/
+*.egg-info/
