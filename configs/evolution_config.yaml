@@ -1,0 +1,12 @@
+evolution:
+  population_size: 16
+  num_generations: 20
+  elite_ratio: 0.25
+  top_k_for_diffusion: 8
+  checkpoint_dir: "./checkpoints"
+  seed: 42
+
+mutation:
+  truncation_steps: 50
+  noise_level: 0.05
+  alignment_ppo_epochs: 1
