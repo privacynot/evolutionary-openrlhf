@@ -1,0 +1,10 @@
+diffusion:
+  type: "1d_unet"
+  hidden_dim: 512
+  num_layers: 4
+  diffusion_steps: 1000
+  beta_schedule: "cosine"
+  condition_dim: 3584          # Qwen2.5-7B 隐层维度，请根据模型调整
+  learning_rate: 2.0e-4
+  batch_size: 32
+  train_epochs_per_gen: 5
