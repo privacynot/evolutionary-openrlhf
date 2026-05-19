@@ -1,0 +1,7 @@
+task:
+  dataset: "gsm8k"
+  prompt_field: "question"
+  answer_field: "answer"
+  orm_type: "exact_match"
+  num_prompts_per_individual: 512
+  max_new_tokens: 256
