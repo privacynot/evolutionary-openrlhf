@@ -1,0 +1,10 @@
+ray[default]
+transformers>=4.40.0
+datasets
+accelerate
+deepspeed
+diffusers
+wandb
+pyyaml
+tqdm
+vllm>=0.4.0
