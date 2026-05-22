@@ -90,3 +90,8 @@ Evolutionary OpenRLHF 的算法可概括为以下两个阶段：
    best_rho = population[0]["rho"]
    print(f"Generation {gen}: best rho = {best_rho:.4f}")
    wandb.log({"generation": gen, "best_rho": best_rho})
+
+
+### 算法流程图
+
+![Evolutionary OpenRLHF 算法流程图](5d9e709e66baf5cc4e6961b37315c78f.jpg)
