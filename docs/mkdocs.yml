@@ -19,3 +19,12 @@ nav:
       - 核心数据结构: data-structures.md
   - 模块接口: api-reference.md
   - 开发扩展: development.md
+
+
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
