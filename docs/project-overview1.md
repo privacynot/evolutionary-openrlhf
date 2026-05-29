@@ -113,18 +113,12 @@ $$\pi = \arg\max_{\pi} \mathbb{E} \left[ \sum r_t - \beta \text{KL} \right]$$
 
 **5.4 - 5.6 优胜劣汰与基因同步**
 
-.. code-block:: python
-
    # 5.4 合并种群
-   merged_population = step_5_4_add_mutants_to_population(population, mutants)
 
    # 5.5 保留 top M 个种群
-   new_population = step_5_5_keep_top_m(merged_population, M=M)
 
    # 5.6 物理基因同步 (内存优化版)
    # 将高分变异体深度拷贝覆盖至被淘汰的低分空闲卡槽
-   qwen_module._weight_registry[target_idx] = copy.deepcopy(qwen_module._weight_registry[source_idx])
-   best_rho = max([ind.rho for ind in population])
 
 * **物理基因同步的作用：**
   严格的达尔文式末位淘汰。这构成了向上的 **进化压力**，隐式地最大化整个种群的平均表现 :math:`\mathbb{E}_{\pi \in \Pi} [\rho(\pi)]`，确保资源永远倾斜给得分最高的大模型权重。
