@@ -110,8 +110,6 @@ $$\pi = \arg\max_{\pi} \mathbb{E} \left[ \sum r_t - \beta \text{KL} \right]$$
 步骤 1：读取数据集 (Prompts & Labels)
 --------------------------------------
 
-.. code-block:: python
-
     raw_data = step_1_load_dataset(dataset_provider)
     # ... 数据格式化处理 ...
     clean_data_for_orm = [{"prompt": p, "label": l} for p, l in zip(prompts_list, labels_list)]
