@@ -27,7 +27,7 @@ $$\text{s.t.} \quad \pi = \arg\max_{\pi} \mathbb{E}_{x \sim \mathcal{D}, \tau \s
 
 Evolutionary OpenRLHF 的主流程通过 **种群协同进化 + 扩散生成过程奖励 (PRM) + PPO 策略优化** 来同时搜索合适的 $P_\theta$ 和 $\pi$，并保证 $\pi$ 相对于动态下发的中间奖励信号是局部最优的。
 
-
+<br><br>
 
 ### 算法步骤与优化问题对应关系
 
@@ -39,7 +39,7 @@ $$\pi = \arg\max_{\pi} \mathbb{E} \left[ \sum r_t - \beta \text{KL} \right]$$
 
 其中 $r_t \sim P_\theta(\cdot | \tau)$。
 
-
+<br><br>
 主流程的每一步都与上述数学定义严密对应：
 
 #### 步骤 1：读取数据集 (Prompts & Labels)
