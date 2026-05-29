@@ -92,6 +92,116 @@ Evolutionary OpenRLHF 的算法可概括为以下两个阶段：
    wandb.log({"generation": gen, "best_rho": best_rho})
 
 
+算法步骤、代码实现与优化问题的对应关系
+======================================
+
+回顾核心优化问题：我们的目标是最大化种群的平均最终任务表现 
+
+$$ \max_{\Pi} \mathbb{E}_{\pi \in \Pi} [\rho(\pi)] $$
+
+其约束条件是种群中的每个策略 $\pi$ 必须满足 
+
+$$ \pi = \arg\max_{\pi} \mathbb{E} \left[ \sum r_t - \beta \text{KL} \right] $$
+
+其中过程奖励 $r_t \sim P_\theta(\cdot|\tau)$。
+
+主流程的每一步都与上述数学定义严密对应：
+
+步骤 1：读取数据集 (Prompts & Labels)
+--------------------------------------
+
+.. code-block:: python
+
+   raw_data = step_1_load_dataset(dataset_provider)
+   # ... 数据格式化处理 ...
+   clean_data_for_orm = [{"prompt": p, "label": l} for p, l in zip(prompts_list, labels_list)]
+
+在实现中，Labels（标准答案）是目标客观状态的具体数据形式（例如 ``clean_data_for_orm`` 中的标准标答 ``label``）。它提供了评价的绝对基准，后续计算 $\rho$（ORM 适应度分数）时需要与该基准进行验证。这一步本质上是 **定义了外层优化目标** $\rho(\pi)$ **的客观参照物**。
+
+步骤 2：随机初始化扩散模型
+--------------------------
+
+.. code-block:: python
+
+   print(f"  ▶ 步骤 2: 随机初始化扩散模型 ...")
+   diffusion_model = step_2_init_diffusion_model(diffusion_model)
+
+扩散模型 $P_\theta$ 负责从大模型的条件信息 $\tau$（Hidden States）中生成连续的过程奖励序列 $R$ 的离散化表达。它是种群探索的起点，后续通过协同训练，它将逐步学会生成能带来高 $\rho$ 分数的奖励信号。这一步 **实现了动态奖励函数生成器**，用于构造内层 PPO 优化约束中的 $P_\theta(\cdot|\tau)$。
+
+步骤 3 & 4：构建初始种群基线 (Initial Population)
+-------------------------------------------------
+
+.. code-block:: python
+
+   def build_initial_individual(i: int):
+       # 3. 随机初始化 Qwen 模型
+       current_qwen = step_3_init_qwen_model(qwen_module, model_index=i)
+       # 4.1 生成并收集 PPO 数据与 Tau
+       ppo_data, hidden_states = step_4_1_generate_and_collect(current_qwen, prompts_list, labels_list, num_samples=N, model_index=i)
+       # 4.2 扩散模型生成初始奖励 R
+       rewards = step_4_2_generate_prm_reward(diffusion_model, hidden_states, ppo_data, step_tag_ids=step_tag_id)
+       training_data = step_4_3_build_ppo_data(qwen_module, ppo_data, rewards)
+       # 4.4 进行 PPO 训练
+       trained_qwen = step_4_4_train_qwen_ppo(qwen_module, current_qwen, training_data, model_index=i)
+       # 4.5 生成并计算 ORM 分数 ρ
+       orm_returns = step_4_5_generate_and_calc_orm(llm_env, trained_qwen, clean_data_for_orm, metric=metric, model_index=i)
+       # ... 返回 individual 实例 ...
+
+   population: Population = executor.map(build_initial_individual, list(range(M)))
+
+这里的候选解为种群中并行维护的 $M$ 个 Qwen 权重副本（个体）。这是 **第一次强制让所有候选策略** $\pi$ **去满足内层约束** $\arg\max_{\pi} \mathbb{E}[\sum r_t]$。系统利用初始弱扩散模型给出的奖励 $R$ 完成首次 PPO 更新，并测出初始的 $\rho$ 分数，从而确立了种群的初始基线与适应度。
+
+步骤 5：协同进化迭代（执行 K 次）
+---------------------------------
+
+**5.1 训练扩散模型 (更新裁判)**
+
+.. code-block:: python
+
+   print(f"  ▶ 步骤 5.1: 训练扩散模型 (Diffusion) ...")
+   diffusion_model = step_5_1_train_diffusion_with_population(diffusion_model, population)
+
+此步骤提取当前种群的高分轨迹特征，用来微调扩散模型参数 $\theta$，使其学会准确拟合 $R \approx \mathbb{E}[\rho \mid \tau]$，实现裁判模型的自我进化。
+
+**5.2 - 5.3 精英变异与 PPO 强化学习对齐**
+
+.. code-block:: python
+
+   elites = step_5_2_select_elite_population(elite_selector, population, elite_count=cfg.elite.elite_count)
+
+   def mutate_one(args) -> Individual:
+       # 5.3.1 【变异】截断扩散生成变异奖励 R'
+       mutated_rewards = step_5_3_1_truncated_diffusion_mutate(diffusion_model, tau_data, ...)
+       # 5.3.3 训练临时 Qwen (探索)
+       temp_qwen = step_5_3_3_train_temp_qwen(qwen_module, ckpt_path, training_data_mutant, ...)
+       # 5.3.4 - 5.3.5 生成新轨迹 \tau_{new} 并【对齐】生成标准奖励 R_{new}
+       ppo_data_new, hidden_states_new = step_5_3_4_generate_and_collect(...)
+       standard_rewards = step_5_3_5_generate_standard_reward(diffusion_model, hidden_states_new, ...)
+       # 5.3.7 再次训练 Qwen (巩固)
+       final_mutant_qwen = step_5_3_7_train_temp_qwen(qwen_module, temp_qwen, training_data_align, ...)
+       # 5.3.8 计算新的 ORM 分数 \rho_{new}
+       orm_returns_new = step_5_3_8_generate_and_calc_orm(...)
+       return mutant # 返回包含新特征的变异体
+
+截断扩散与对齐机制抛弃了常规的动作空间加噪，转而直接在“奖励空间”生成探索信号 $R'$，促使大模型改变固有的推理习惯。随后利用干净的扩散模型重新打分 $R_{new}$ 进行二次对齐训练。这是求解外层最大化问题的核心引擎，在确保策略始终满足内层 PPO 约束的前提下， **强迫策略跳出局部最优**，去寻找能带来更高 $\rho$ 分数的全新推理路径。
+
+**5.4 - 5.6 优胜劣汰与基因同步**
+
+.. code-block:: python
+
+   # 5.4 合并种群
+   merged_population = step_5_4_add_mutants_to_population(population, mutants)
+
+   # 5.5 保留 top M 个种群
+   new_population = step_5_5_keep_top_m(merged_population, M=M)
+
+   # 5.6 物理基因同步 (内存优化版)
+   # 将高分变异体深度拷贝覆盖至被淘汰的低分空闲卡槽
+   qwen_module._weight_registry[target_idx] = copy.deepcopy(qwen_module._weight_registry[source_idx])
+   best_rho = max([ind.rho for ind in population])
+
+物理基因同步执行了严格的达尔文式末位淘汰。这种极致的优胜劣汰构成了向上的 **进化压力**，隐式地最大化了整个种群的平均最终表现 $\mathbb{E}_{\pi \in \Pi} [\rho(\pi)]$，确保 GPU 内存与计算资源永远倾斜给得分最高的大模型权重。
+
 ### 算法流程图
 
 ![Evolutionary OpenRLHF 算法流程图](5d9e709e66baf5cc4e6961b37315c78f.jpg)
