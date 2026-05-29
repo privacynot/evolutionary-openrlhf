@@ -119,8 +119,6 @@ $$\pi = \arg\max_{\pi} \mathbb{E} \left[ \sum r_t - \beta \text{KL} \right]$$
 步骤 2：随机初始化扩散模型
 --------------------------
 
-.. code-block:: python
-
     print(f"  ▶ 步骤 2: 随机初始化扩散模型 ...")
     diffusion_model = step_2_init_diffusion_model(diffusion_model)
 
@@ -128,8 +126,6 @@ $$\pi = \arg\max_{\pi} \mathbb{E} \left[ \sum r_t - \beta \text{KL} \right]$$
 
 步骤 3 & 4：构建初始种群基线 (Initial Population)
 -------------------------------------------------
-
-.. code-block:: python
 
     def build_initial_individual(i: int):
         # 3. 随机初始化 Qwen 模型
@@ -154,16 +150,12 @@ $$\pi = \arg\max_{\pi} \mathbb{E} \left[ \sum r_t - \beta \text{KL} \right]$$
 
 **5.1 训练扩散模型 (更新裁判)**
 
-.. code-block:: python
-
     print(f"  ▶ 步骤 5.1: 训练扩散模型 (Diffusion) ...")
     diffusion_model = step_5_1_train_diffusion_with_population(diffusion_model, population)
 
 此步骤提取当前种群的高分轨迹特征，用来微调扩散模型参数 $\theta$，使其学会准确拟合 $R \approx \mathbb{E}[\rho \mid \tau]$，实现裁判模型的自我进化。
 
 **5.2 - 5.3 精英变异与 PPO 强化学习对齐**
-
-.. code-block:: python
 
     elites = step_5_2_select_elite_population(elite_selector, population, elite_count=cfg.elite.elite_count)
 
@@ -184,8 +176,6 @@ $$\pi = \arg\max_{\pi} \mathbb{E} \left[ \sum r_t - \beta \text{KL} \right]$$
 截断扩散与对齐机制抛弃了常规的动作空间加噪，转而直接在“奖励空间”生成探索信号 $R'$，促使大模型改变固有的推理习惯。随后利用干净的扩散模型重新打分 $R_{new}$ 进行二次对齐训练。这是求解外层最大化问题的核心引擎，在确保策略始终满足内层 PPO 约束的前提下，强迫策略跳出局部最优，去寻找能带来更高 $\rho$ 分数的全新推理路径。
 
 **5.4 - 5.6 优胜劣汰与基因同步**
-
-.. code-block:: python
 
     # 5.4 合并种群
     merged_population = step_5_4_add_mutants_to_population(population, mutants)
