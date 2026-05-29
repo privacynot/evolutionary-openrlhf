@@ -96,6 +96,7 @@ $$\pi = \arg\max_{\pi} \mathbb{E} \left[ \sum r_t - \beta \text{KL} \right]$$
 
 物理基因同步执行了严格的达尔文式末位淘汰。这种极致的优胜劣汰构成了向上的进化压力，隐式地最大化了整个种群的平均最终表现 $\mathbb{E}_{\pi \in \Pi} [\rho(\pi)]$，确保 GPU 内存与计算资源永远倾斜给得分最高的大模型权重。
 
+<br><br>
 ### 算法流程图
 
 ![Evolutionary OpenRLHF 算法流程图](5d9e709e66baf5cc4e6961b37315c78f.jpg)
