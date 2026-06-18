@@ -12,6 +12,6 @@
 - **[方法总览](method.md)**：基于tau和R预测rho。
 - **[建模原理](principle_model.md)**：建模原理。
 - **[Beta概率建模](beta_model.md)**：Beta概率建模。
-- **[Fusion结构设计](fusion_structure_design.md)**：Fusion结构设计。
+- **[Fusion结构设计](fusioon_structure_design.md)**：Fusion结构设计。
 - **[训练与进化流程](training_evolution.md)**：训练与进化流程。
 - **[实验设计](experiment_design.md)**：实验设计与指标。
