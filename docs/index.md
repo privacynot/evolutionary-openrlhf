@@ -10,7 +10,7 @@
 - **[模块接口](api-reference.md)**：查阅各 Python 模块的用途与主要 API。
 - **[开发扩展](development.md)**：了解如何为框架贡献新的功能。
 - **[方法总览](method.md)**：基于tau和R预测rho。
-- **[建模原理](princlple_model.md)**：建模原理。
+- **[建模原理](principle_model.md)**：建模原理。
 - **[Beta概率建模](beta_model.md)**：Beta概率建模。
 - **[Fusion结构设计](fusion_structure_design.md)**：Fusion结构设计。
 - **[训练与进化流程](training_evolution.md)**：训练与进化流程。
