@@ -15,3 +15,4 @@
 - **[Fusion结构设计](fusioon_structure_design.md)**：Fusion结构设计。
 - **[训练与进化流程](training_evolution.md)**：训练与进化流程。
 - **[实验设计](experiment_design.md)**：实验设计与指标。
+- **[实验结果](result.md)**：实验结果与分析。
