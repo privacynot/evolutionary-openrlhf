@@ -16,3 +16,4 @@
 - **[训练与进化流程](training_evolution.md)**：训练与进化流程。
 - **[实验设计](experiment_design.md)**：实验设计与指标。
 - **[实验结果](result.md)**：实验结果与分析。
+- **[tau/R/rho对比](improve.md)**：tau/R/rho对比。
