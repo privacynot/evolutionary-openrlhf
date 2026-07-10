@@ -17,4 +17,4 @@
 - **[实验设计](experiment_design.md)**：实验设计与指标。
 - **[实验结果](result.md)**：实验结果与分析。
 - **[tau/R/rho对比](improve.md)**：tau/R/rho对比。
-- **[ppo详解](PPO流程详解.md)**：PPO流程详解。
+- **[PPO流程详解](PPO流程详解.md)**：ppo流程详解。
