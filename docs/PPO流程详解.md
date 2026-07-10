@@ -665,12 +665,12 @@ step_reward = reward_for_this_step
 
 ## 9. 最准确的一句话总结
 
-在当前 `Masdiff_change` no-evolution 工程里，PPO 只有一次：
+在当前项目里，PPO 只有一次：
 
 ```text
 step_4_4_train_qwen_ppo(training_data)
 ```
 
-它的输入是由 `response -> sequences/action_mask` 和 `Tau -> diffusion reward` 合并出的 `training_data`；它的输出是更新后的 Qwen 模型参数。PPO 后的 `step_4_5` 会再次生成 response 并计算 rho，但这不是第二次 PPO。
+它的输入是由 `response -> sequences/action_mask` 和 `Tau -> diffusion reward` 合并出的 `training_data`；它的输出是更新后的 Qwen 模型参数。PPO 后的 `step_4_5` 会再次生成 response 并计算 rho。
 
 如果未来要做真正 step 级 response，需要显式保存 `steps`、`step_spans`、`step_rewards`，再把 step reward 映射到 token reward 或重写 PPO 为 step-level advantage/loss。
