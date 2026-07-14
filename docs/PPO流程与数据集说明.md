@@ -29,7 +29,7 @@
 
 可以把 PPO 理解成“带约束的策略更新”：reward 提供方向，critic 降低波动，KL 控制更新幅度。
 
-## 3. 我下载的数据集
+## 3. 数据集
 
 我下载的是 `microsoft/orca-math-word-problems-200k`，本地路径是：[data/orca-math-word-problems-200k/data/train-00000-of-00001.parquet](data/orca-math-word-problems-200k/data/train-00000-of-00001.parquet)。
 
